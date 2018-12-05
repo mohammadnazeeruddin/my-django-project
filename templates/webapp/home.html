@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+{%extends 'webapp/base.html'%}<!--this is master page(templtae)<-->
+{%load staticfiles%}
+<html>
+<head>
+
+	<link rel="stylesheet" type="text/css" href="{%static 'css/web.css'%}">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	
+</head>
+<!--This is child Template Page<-->
+ <body>
+    <div class="container">
+      <ol class="breadcrumb my-4">
+        {%block breadcrumb%}
+        <li class="breadcrumb-item active ">Boards</li>
+        {%endblock%}
+      </ol>
+      {%block content%}
+      <table class="table jumbotron" >
+        <thead class="thead-inverse" style="background-color: black;">
+          <tr class="tbl">
+            <th>Board</th>
+            <th>Posts</th>
+            <th>Topics</th>
+            <th>Last Post</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for board in boards %}
+            <tr>
+              <td>
+                <a href="{%url 'boards_topics' board.id %}">{{ board.name }}</a>
+                <small class="text-muted d-block">{{ board.description }}</small>
+              </td>
+
+              <td class="align-middle">
+                {{ board.get_posts_count }}
+              </td>
+              <td class="align-middle">
+                {{ board.topics.count }}
+              </td>
+              <td>
+                {% with post=board.get_last_post %}
+              {% if post %}
+                <small>
+                  <a href="{% url 'topic_posts' board.pk post.topic.pk %}">
+                    By {{ post.created_by.username }} at {{ post.create_at }}
+                  </a>
+                </small>
+              {% else %}
+                <small class="text-muted">
+                  <em>No posts yet.</em>
+                </small>
+              {% endif %}
+            {% endwith %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="container">
+    <small>developed by@</small>
+    <h6>Mohammad.Nazeeruddin</h6>
+  </div>
+    <small></small>
+    {%endblock%}
+  </body>
+
+</html>

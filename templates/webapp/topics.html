@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+{%extends 'webapp/base.html'%}
+{%load staticfiles%}
+{% load humanize %}
+<html>
+<head>
+	<title>{%block title%} {{boards.name}}-{{block.super}} {%endblock%}</title>
+	<link rel="stylesheet" type="text/css" href="{%static 'css/web.css'%}">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+</head>
+ <body>
+    <div class="container">
+      <ol class="breadcrumb my-5">
+      	{%block breadcrumb%}
+        <li class="breadcrumb-item"><a href="{%url 'home'%}">Boards</a></li>
+        <li class="breadcrumb-item active">{{board.name}}</li>
+        {%endblock%}
+      </ol>
+    </div>
+
+    {%block content%}
+    <div class="mb-4">
+    		<a href="{% url 'new_topics' board.pk %}" class="btn btn-primary">New topic</a>
+    		<!-- This link redirecting to new_topic.html T_boards.pk matching with primary keys<-->
+  	  </div>
+     <table class="table">
+    <thead class="thead-inverse">
+      <tr>
+        <th>Topic</th>
+        <th>Starter</th>
+        <th>Replies</th>
+        <th>Views</th>
+        <th>Last Update</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for topic in topics %}
+      <!-- The related_name="topics" parameter will be used to create a reverse relationship where the Board instances will have access a list of Topic instances that belong to it.<-->
+        {% url 'topic_posts' board.pk topic.pk as topic_url %}
+        <tr>
+          <td>
+            <p class="mb-0">
+              <a href="{{ topic_url }}">{{ topic.subject }}</a>
+            </p>
+            <small class="text-muted">
+              Pages:
+              {% for i in topic.get_page_range %}
+                <a href="{{ topic_url }}?page={{ i }}">{{ i }}</a>
+              {% endfor %}
+              {% if topic.has_many_pages %}
+              ... <a href="{{ topic_url }}?page={{ topic.get_page_count }}">Last Page</a>
+              {% endif %}
+            </small>
+          </td>
+          <td class="align-middle">{{ topic.starter.username }}</td>
+          <td class="align-middle">{{ topic.replies }}</td>
+          <td class="align-middle">{{ topic.views }}</td>
+          <td class="align-middle">{{ topic.last_update|naturaltime }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+   {% include 'includes/pagination.html' %}
+{%endblock%}
+  </body>
+}
+</html>
